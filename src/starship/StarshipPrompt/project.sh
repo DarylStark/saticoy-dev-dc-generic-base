@@ -4,16 +4,16 @@ dirname=$1
 option=$2
 
 if [ "$option" == "project_name" ]; then
-    echo $dirname | cut -d '/' -f 3
+    echo $dirname | cut -d '/' -f 2
 fi
 
 if [ "$option" == "repo_name" ]; then
-    reponame=$(echo $dirname | cut -d '/' -f 4)
+    reponame=$(echo $dirname | cut -d '/' -f 3)
     if [ "$reponame" == "" ]; then
         echo "..."
         exit 0
     fi
-    inner_folder=$(echo $dirname | cut -d '/' -f 5-)
+    inner_folder=$(echo $dirname | cut -d '/' -f 4-)
     if [ "$inner_folder" != "" ]; then
         inner_folder=" > $inner_folder"
     fi

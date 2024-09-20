@@ -5,10 +5,10 @@
 add_newline = false
 
 # Continuation prompt
-continuation_prompt="> "
+continuation_prompt = "> "
 
 # Normal prompt format
-format="""
+format = """
 (${env_var.VIRTUAL_ENV_PROMPT}- )\
 ${env_var.PROMPTNAME} - \
 $time \
@@ -24,10 +24,6 @@ ${custom.git_branch_not_clean}\
 ${custom.dirname_home}\
 ${custom.dirname_not_home}\
 )\
-(\
-${custom.dirname_project}\
-( > ${custom.dirname_project_repo_name})\
-)\
 $character\
 """
 
@@ -36,13 +32,6 @@ disabled = false
 style = 'fg:#555555'
 format = '[$time]($style)'
 time_format = '%H:%M'
-
-[directory]
-disabled = false
-truncate_to_repo = false
-truncation_length = 0
-style = 'bold yellow'
-format = '[$path]($style)'
 
 [git_branch]
 disabled = false
@@ -103,27 +92,15 @@ symbol = ''
 format = '[DEV]($style)'
 
 [custom.dirname_home]
-when = '~/StarshipPrompt/dirname.sh is home && ~/StarshipPrompt/dirname.sh is not_projects'
+when = '~/StarshipPrompt/dirname.sh is home || ~/StarshipPrompt/dirname.sh is workspaces'
 style = 'bold yellow'
 command = '~/StarshipPrompt/dirname.sh'
 format = '[$output]($style)'
 
 [custom.dirname_not_home]
-when = '~/StarshipPrompt/dirname.sh is not_home'
+when = '~/StarshipPrompt/dirname.sh is not_home && ~/StarshipPrompt/dirname.sh is not_workspaces'
 style = 'bold red'
 command = '~/StarshipPrompt/dirname.sh'
-format = '[$output]($style)'
-
-[custom.dirname_project]
-when = '~/StarshipPrompt/dirname.sh is projects'
-style = 'bold yellow'
-command = '~/StarshipPrompt/dirname.sh project_name'
-format = '[$output]($style)'
-
-[custom.dirname_project_repo_name]
-when = '~/StarshipPrompt/dirname.sh is projects && ~/StarshipPrompt/dirname.sh project_repo_name'
-style = 'bold yellow'
-command = '~/StarshipPrompt/dirname.sh project_repo_name'
 format = '[$output]($style)'
 
 [character]

@@ -23,6 +23,9 @@ COPY ./starship/StarshipPrompt/* /home/developer/StarshipPrompt/
 # Install dependencies
 RUN apk add --no-cache bash wget git vim sudo grep
 
+# Directory for Dev Container
+RUN mkdir -p /workspaces
+
 # Allow the developer user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
@@ -32,8 +35,9 @@ RUN chmod +x install.sh
 RUN ./install.sh -y
 RUN rm ./install.sh
 
-# Change ownership of the home directory
+# Change ownership of the home directory and workspace directory
 RUN chown -R developer:developer /home/developer
+RUN chown -R developer:developer /workspaces
 
 # Switch to the non-root user
 USER developer
@@ -42,7 +46,6 @@ USER developer
 RUN mkdir -p .config
 RUN mkdir -p StarshipPrompt
 ENV PROMPTNAME="BASE"
-
 
 # Set the default command to bash
 CMD ["bash"]
