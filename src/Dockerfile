@@ -1,11 +1,11 @@
 # Use a minimal base image
 FROM alpine:3.20.3 AS base
 
-# Create a non-root user and group
-RUN addgroup -S developer && adduser -S developer -G developer
+# Install dependencies
+RUN apk add --no-cache bash wget git vim sudo grep
 
-# Create the sudo group and add the developer user to it
-RUN addgroup sudo && adduser developer sudo
+# Create a non-root user and group
+RUN adduser -h /home/developer -s /bin/bash -u 1001 -D developer
 
 # Set the working directory for the new user
 WORKDIR /home/developer
@@ -19,9 +19,6 @@ COPY ./bash/bashrc /home/developer/.bashrc
 # Copy Starship configuration
 COPY ./starship/starship.toml /home/developer/.config/starship.toml
 COPY ./starship/StarshipPrompt/* /home/developer/StarshipPrompt/
-
-# Install dependencies
-RUN apk add --no-cache bash wget git vim sudo grep
 
 # Directory for Dev Container
 RUN mkdir -p /workspaces
