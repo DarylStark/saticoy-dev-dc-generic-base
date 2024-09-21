@@ -1,0 +1,109 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Inserts a blank line between shell prompts
+add_newline = false
+
+# Continuation prompt
+continuation_prompt = "> "
+
+# Normal prompt format
+format = """
+(${env_var.VIRTUAL_ENV_PROMPT}- )\
+${env_var.PROMPTNAME} - \
+$time \
+(\\(\
+(${custom.git_branch_issue_nr}/)\
+(${custom.git_branch_type}/)\
+(${custom.git_on_main}/)\
+(${custom.git_on_dev}/)\
+${custom.git_branch_clean}\
+${custom.git_branch_not_clean}\
+\\) )\
+(\
+${custom.dirname_home}\
+${custom.dirname_not_home}\
+)\
+$character\
+"""
+
+[time]
+disabled = false
+style = 'fg:#555555'
+format = '[$time]($style)'
+time_format = '%H:%M'
+
+[git_branch]
+disabled = false
+always_show_remote = true
+format = '[$symbol$branch]($style)'
+
+[env_var.PROMPTNAME]
+default = 'xxx'
+style = 'white'
+format = '[$env_value]($style)'
+
+[env_var.VIRTUAL_ENV_PROMPT]
+style = 'bold white'
+format = '\([$env_value]($style)\) '
+
+[custom.git_branch_clean]
+require_repo = true
+when = '~/StarshipPrompt/git_clean.sh'
+command = '~/StarshipPrompt/git_branch.sh branch'
+style = 'bold green'
+format = '[$symbol($output)]($style)'
+
+[custom.git_branch_not_clean]
+require_repo = true
+when = '~/StarshipPrompt/git_clean.sh reverse'
+command = '~/StarshipPrompt/git_branch.sh branch'
+style = 'bold red'
+format = '[$symbol($output)]($style)'
+
+[custom.git_branch_issue_nr]
+require_repo = true
+when = '~/StarshipPrompt/git_branch.sh issue'
+command = '~/StarshipPrompt/git_branch.sh issue'
+style = 'bold green'
+symbol = '#'
+format = '[$symbol($output)]($style)'
+
+[custom.git_branch_type]
+require_repo = true
+when = '~/StarshipPrompt/git_branch.sh type'
+command = '~/StarshipPrompt/git_branch.sh type short'
+style = 'bold green'
+symbol = ''
+format = '[$symbol($output)]($style)'
+
+[custom.git_on_main]
+require_repo = true
+when = '~/StarshipPrompt/git_branch.sh is main'
+style = 'red'
+symbol = ''
+format = '[MAIN]($style)'
+
+[custom.git_on_dev]
+require_repo = true
+when = '~/StarshipPrompt/git_branch.sh is dev'
+style = 'bold yellow'
+symbol = ''
+format = '[DEV]($style)'
+
+[custom.dirname_home]
+when = '~/StarshipPrompt/dirname.sh is home || ~/StarshipPrompt/dirname.sh is workspaces'
+style = 'bold yellow'
+command = '~/StarshipPrompt/dirname.sh'
+format = '[$output]($style)'
+
+[custom.dirname_not_home]
+when = '~/StarshipPrompt/dirname.sh is not_home && ~/StarshipPrompt/dirname.sh is not_workspaces'
+style = 'bold red'
+command = '~/StarshipPrompt/dirname.sh'
+format = '[$output]($style)'
+
+[character]
+format = ' $symbol '
+success_symbol = '[>](bold green)'
+error_symbol = '[>](bold green)'
