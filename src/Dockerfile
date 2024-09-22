@@ -5,7 +5,7 @@ FROM alpine:3.20.3 AS base
 RUN apk add --no-cache grep less
 
 # Install needed tools
-RUN apk add --no-cache bash wget git vim sudo openssh-client
+RUN apk add --no-cache bash wget git vim sudo openssh-client bash-completion
 
 # Create a non-root user and group
 RUN adduser -h /home/developer -s /bin/bash -u 1001 -D developer
@@ -35,6 +35,9 @@ RUN chmod +x install.sh
 RUN ./install.sh -y
 RUN rm ./install.sh
 
+# Download Git completion script
+RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash
+
 # Change ownership of the home directory and workspace directory
 RUN chown -R developer:developer /home/developer
 RUN chown -R developer:developer /workspaces
@@ -46,6 +49,9 @@ USER developer
 RUN mkdir -p .config
 RUN mkdir -p StarshipPrompt
 ENV PROMPTNAME="BASE"
+
+# Source the Git completion script in .bashrc
+RUN echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Set the default command to bash
 CMD ["bash"]
