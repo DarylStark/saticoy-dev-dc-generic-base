@@ -1,8 +1,11 @@
 # Use a minimal base image
 FROM alpine:3.20.3 AS base
 
-# Install dependencies
-RUN apk add --no-cache bash wget git vim sudo grep
+# Install full applications where the Alpine package is not sufficient
+RUN apk add --no-cache grep less
+
+# Install needed tools
+RUN apk add --no-cache bash wget git vim sudo
 
 # Create a non-root user and group
 RUN adduser -h /home/developer -s /bin/bash -u 1001 -D developer
