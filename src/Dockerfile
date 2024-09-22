@@ -7,6 +7,13 @@ RUN apk add --no-cache grep less
 # Install needed tools
 RUN apk add --no-cache bash wget git vim sudo openssh-client bash-completion
 
+# Install GitHub CLI
+RUN apk add --no-cache curl
+RUN wget https://github.com/cli/cli/releases/download/v2.57.0/gh_2.57.0_linux_amd64.tar.gz -O gh.tar.gz
+RUN tar -xzf gh.tar.gz
+RUN mv gh_2.57.0_linux_amd64/bin/gh /usr/local/bin/
+RUN rm -rf gh.tar.gz gh_2.33.0_linux_amd64
+
 # Create a non-root user and group
 RUN adduser -h /home/developer -s /bin/bash -u 1001 -D developer
 
