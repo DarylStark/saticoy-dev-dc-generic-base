@@ -5,7 +5,7 @@ FROM alpine:3.20.3 AS base
 RUN apk add --no-cache grep less
 
 # Install needed tools
-RUN apk add --no-cache bash wget git vim sudo
+RUN apk add --no-cache bash wget git vim sudo openssh-client
 
 # Create a non-root user and group
 RUN adduser -h /home/developer -s /bin/bash -u 1001 -D developer
