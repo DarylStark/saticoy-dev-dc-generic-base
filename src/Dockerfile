@@ -17,14 +17,13 @@ RUN apt-get install -y --no-install-recommends \
     iputils-ping \
     ca-certificates
 
-
 # Install GitHub CLI
-RUN mkdir -p -m 755 /etc/apt/keyrings
-RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
-RUN sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-RUN apt update
-RUN apt install gh -y
+RUN mkdir -p -m 755 /etc/apt/keyrings && \
+    wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
+    sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
+    apt update && \
+    apt install gh -y
 
 # Create a non-root user and group
 RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
@@ -50,17 +49,17 @@ RUN mkdir -p /workspaces
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install Starship
-RUN wget https://starship.rs/install.sh
-RUN chmod +x install.sh
-RUN ./install.sh -y
-RUN rm ./install.sh
+RUN wget https://starship.rs/install.sh && \
+    chmod +x install.sh && \
+    ./install.sh -y && \
+    rm ./install.sh
 
 # Download Git completion script
 RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash
 
 # Change ownership of the home directory and workspace directory
-RUN chown -R developer:developer /home/developer
-RUN chown -R developer:developer /workspaces
+RUN chown -R developer:developer /home/developer && \
+    chown -R developer:developer /workspaces
 
 # Remove package manager cache
 RUN rm -rf /var/lib/apt/lists/*
@@ -69,8 +68,8 @@ RUN rm -rf /var/lib/apt/lists/*
 USER developer
 
 # Configure Starship
-RUN mkdir -p .config
-RUN mkdir -p StarshipPrompt
+RUN mkdir -p .config && \
+    mkdir -p StarshipPrompt
 ENV PROMPTNAME="BASE"
 
 # Source the Git completion script in .bashrc
