@@ -1,9 +1,6 @@
 # Use a minimal base image
 FROM debian:12.7-slim AS base
 
-# Configure package manager
-RUN 
-
 # Install needed tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
