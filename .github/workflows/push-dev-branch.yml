@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - origin/issue-15/feature/ci-linting
 
 jobs:
   ci:
@@ -10,7 +11,7 @@ jobs:
     uses: DarylStark/slough-gha-wf-container-projects/.github/workflows/ci-container.yml@main
   cd:
     name: CD
-    uses: DarylStark/slough-gha-wf-container-projects/.github/workflows/cd-container.yml@main
+    uses: DarylStark/slough-gha-wf-container-projects/.github/workflows/cd-container.yml@dev
     needs: ci
     with:
       container-tags: slough-dev-dc-generic-base:latest-dev
