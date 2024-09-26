@@ -13,7 +13,7 @@ jobs:
     uses: DarylStark/slough-gha-wf-container-projects/.github/workflows/cd-container.yml@main
     needs: ci
     with:
-      container-tags: slough-dev-dc-generic-base:latest
+      container-tags: dast1986/slough-dev-dc-generic-base:latest
       platforms: linux/arm64,linux/amd64
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
