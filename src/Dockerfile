@@ -2,10 +2,11 @@
 FROM debian:12.7-slim AS base
 
 # Configure package manager
-RUN apt-get update
+RUN 
 
 # Install needed tools
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     curl \
     git \
     less \
@@ -15,15 +16,19 @@ RUN apt-get install -y --no-install-recommends \
     openssh-client \
     bash-completion \
     iputils-ping \
-    ca-certificates
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib
 
-# Install GitHub CLI
+# Add GitHub CLI repository
 RUN mkdir -p -m 755 /etc/apt/keyrings && \
     wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
     sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
     apt update && \
-    apt install gh -y
+    apt install gh -y && \
+    apt-get clean && \
+    rm -rf /var/lib
 
 # Create a non-root user and group
 RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
