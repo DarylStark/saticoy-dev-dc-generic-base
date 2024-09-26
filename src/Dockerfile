@@ -1,11 +1,12 @@
 # Use a minimal base image
 FROM debian:12.7-slim AS base
 
-# Configure package manager
-RUN apt-get update
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install needed tools
-RUN apt-get install -y --no-install-recommends \
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     curl \
     git \
     less \
@@ -15,16 +16,18 @@ RUN apt-get install -y --no-install-recommends \
     openssh-client \
     bash-completion \
     iputils-ping \
-    ca-certificates
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists
 
-
-# Install GitHub CLI
-RUN mkdir -p -m 755 /etc/apt/keyrings
-RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
-RUN sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-RUN apt update
-RUN apt install gh -y
+# Add GitHub CLI repository
+RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
+    chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
+    apt-get update && \
+    apt-get install gh=2.57.0 -y --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists
 
 # Create a non-root user and group
 RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
@@ -44,37 +47,28 @@ COPY ./starship/starship.toml /home/developer/.config/starship.toml
 COPY ./starship/StarshipPrompt/* /home/developer/StarshipPrompt/
 
 # Directory for Dev Container
-RUN mkdir -p /workspaces
+RUN mkdir -p /workspaces && chown -R developer:developer /workspaces
 
 # Allow the developer user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install Starship
-RUN wget https://starship.rs/install.sh
-RUN chmod +x install.sh
-RUN ./install.sh -y
-RUN rm ./install.sh
+RUN wget -q https://starship.rs/install.sh -O install.sh && \
+    chmod +x install.sh && \
+    ./install.sh -y && \
+    rm ./install.sh
 
 # Download Git completion script
-RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash
-
-# Change ownership of the home directory and workspace directory
-RUN chown -R developer:developer /home/developer
-RUN chown -R developer:developer /workspaces
-
-# Remove package manager cache
-RUN rm -rf /var/lib/apt/lists/*
+RUN wget -q https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash && \
+    echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Switch to the non-root user
 USER developer
 
 # Configure Starship
-RUN mkdir -p .config
-RUN mkdir -p StarshipPrompt
+RUN mkdir -p .config && \
+    mkdir -p StarshipPrompt
 ENV PROMPTNAME="BASE"
-
-# Source the Git completion script in .bashrc
-RUN echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Set the default command to bash
 CMD ["bash"]
