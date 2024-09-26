@@ -62,6 +62,9 @@ RUN wget -q https://starship.rs/install.sh -O install.sh && \
 RUN wget -q https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash && \
     echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
+# Fix all permissions for the home folder
+RUN chown -R developer:developer /home/developer
+
 # Switch to the non-root user
 USER developer
 
