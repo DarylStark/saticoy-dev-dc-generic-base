@@ -21,10 +21,10 @@ RUN apt-get update && \
 
 # Add GitHub CLI repository
 RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
-    sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
+    chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
     apt-get update && \
-    apt-get install gh -y && \
+    apt-get install gh -y --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists
 
@@ -52,13 +52,13 @@ RUN mkdir -p /workspaces && chown -R developer:developer /workspaces
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install Starship
-RUN wget https://starship.rs/install.sh && \
+RUN wget -q https://starship.rs/install.sh -O install.sh && \
     chmod +x install.sh && \
     ./install.sh -y && \
     rm ./install.sh
 
 # Download Git completion script
-RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash && \
+RUN wget -q https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash && \
     echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Switch to the non-root user
