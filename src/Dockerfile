@@ -18,7 +18,7 @@ RUN apt-get update && \
     iputils-ping \
     ca-certificates && \
     apt-get clean && \
-    rm -rf /var/lib
+    rm -rf /var/lib/apt/lists
 
 # Add GitHub CLI repository
 RUN mkdir -p -m 755 /etc/apt/keyrings && \
@@ -28,7 +28,7 @@ RUN mkdir -p -m 755 /etc/apt/keyrings && \
     apt update && \
     apt install gh -y && \
     apt-get clean && \
-    rm -rf /var/lib
+    rm -rf /var/lib/apt/lists
 
 # Create a non-root user and group
 RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
