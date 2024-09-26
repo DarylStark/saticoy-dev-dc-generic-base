@@ -1,6 +1,8 @@
 # Use a minimal base image
 FROM debian:12.7-slim AS base
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Install needed tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -18,12 +20,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists
 
 # Add GitHub CLI repository
-RUN mkdir -p -m 755 /etc/apt/keyrings && \
-    wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
+RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
     sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
-    apt update && \
-    apt install gh -y && \
+    apt-get update && \
+    apt-get install gh -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists
 
@@ -45,7 +46,7 @@ COPY ./starship/starship.toml /home/developer/.config/starship.toml
 COPY ./starship/StarshipPrompt/* /home/developer/StarshipPrompt/
 
 # Directory for Dev Container
-RUN mkdir -p /workspaces
+RUN mkdir -p /workspaces && chown -R developer:developer /workspaces
 
 # Allow the developer user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -57,14 +58,8 @@ RUN wget https://starship.rs/install.sh && \
     rm ./install.sh
 
 # Download Git completion script
-RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash
-
-# Change ownership of the home directory and workspace directory
-RUN chown -R developer:developer /home/developer && \
-    chown -R developer:developer /workspaces
-
-# Remove package manager cache
-RUN rm -rf /var/lib/apt/lists/*
+RUN wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -O /etc/bash_completion.d/git-completion.bash && \
+    echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Switch to the non-root user
 USER developer
@@ -73,9 +68,6 @@ USER developer
 RUN mkdir -p .config && \
     mkdir -p StarshipPrompt
 ENV PROMPTNAME="BASE"
-
-# Source the Git completion script in .bashrc
-RUN echo "source /etc/bash_completion.d/git-completion.bash" >> /home/developer/.bashrc
 
 # Set the default command to bash
 CMD ["bash"]
