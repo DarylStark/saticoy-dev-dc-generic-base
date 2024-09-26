@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      - origin/issue-15/feature/ci-linting
+      - issue-15/feature/ci-linting
 
 jobs:
   ci:
