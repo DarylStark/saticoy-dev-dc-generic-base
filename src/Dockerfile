@@ -29,6 +29,17 @@ RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | te
     apt-get clean && \
     rm -rf /var/lib/apt/lists
 
+# Install Hadolint
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+    wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64; \
+    elif [ "$ARCH" = "arm64" ]; then \
+    wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-arm64; \
+    else \
+    echo "Unsupported architecture: $ARCH"; exit 1; \
+    fi && \
+    chmod +x /usr/local/bin/hadolint
+
 # Create a non-root user and group
 RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
 
