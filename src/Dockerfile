@@ -29,8 +29,33 @@ RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | te
     apt-get clean && \
     rm -rf /var/lib/apt/lists
 
+# Install Hadolint
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+    wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64; \
+    elif [ "$ARCH" = "arm64" ]; then \
+    wget -qO /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-arm64; \
+    else \
+    echo "Unsupported architecture: $ARCH"; exit 1; \
+    fi && \
+    chmod +x /usr/local/bin/hadolint
+
+# Install Docker CLI
+# hadolint ignore=DL3008,SC1091
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    wget -q https://download.docker.com/linux/debian/gpg -O /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get -y --no-install-recommends install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists
+
 # Create a non-root user and group
-RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer
+RUN useradd --home-dir /home/developer --create-home --skel /etc/skel --shell /bin/bash --uid 1001 developer --groups docker
 
 # Set the working directory for the new user
 WORKDIR /home/developer
