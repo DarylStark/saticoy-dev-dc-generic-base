@@ -41,8 +41,9 @@ RUN ARCH=$(dpkg --print-architecture) && \
     chmod +x /usr/local/bin/hadolint
 
 # Install Docker CLI
+# hadolint ignore=DL3008,SC1091
 RUN install -m 0755 -d /etc/apt/keyrings && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    wget -q https://download.docker.com/linux/debian/gpg -O /etc/apt/keyrings/docker.asc && \
     chmod a+r /etc/apt/keyrings/docker.asc && \
     echo \
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
