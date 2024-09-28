@@ -6,7 +6,7 @@
         {
             "label": "Build development container",
             "type": "shell",
-            "command": "sudo docker build -t dast1986/slough-dev-dc-python:dev .",
+            "command": "sudo docker build -t dast1986/slough-dev-dc-generic-base:dev .",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
@@ -18,7 +18,7 @@
         {
             "label": "Run development container",
             "type": "shell",
-            "command": "sudo docker run -it dast1986/slough-dev-dc-python:dev",
+            "command": "sudo docker run -it dast1986/slough-dev-dc-generic-base:dev",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
