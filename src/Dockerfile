@@ -3,10 +3,17 @@ FROM debian:12.7-slim AS base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# Make sure man pages are installed
+RUN sed -i 's:^path-exclude /usr/share/man:#path-exclude /usr/share/man:' \
+        /etc/dpkg/dpkg.cfg.d/docker
+
 # Install needed tools
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends --reinstall \
+    manpages \
+    man-db \
+    coreutils \
     curl \
     git \
     less \
@@ -21,11 +28,12 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists
 
 # Add GitHub CLI repository
+# hadolint ignore=DL3008
 RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
     chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
     apt-get update && \
-    apt-get install gh=2.57.0 -y --no-install-recommends && \
+    apt-get install gh -y --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists
 
