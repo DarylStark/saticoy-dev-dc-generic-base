@@ -20,6 +20,7 @@ alias ls='ls -h --color'
 alias ll='ls -alF'
 alias la='ls -l'
 alias docker='sudo docker'
+alias pre-commit='uvx pre-commit'
 #-------------------------------------------------------------------------------
 # Run any local .bashrc files
 #-------------------------------------------------------------------------------

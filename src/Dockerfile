@@ -101,6 +101,9 @@ RUN chown -R developer:developer /home/developer
 # Switch to the non-root user
 USER developer
 
+# Install `uv`. Used for pre-commit
+RUN wget -qO- https://astral.sh/uv/install.sh | sh
+
 # Configure Starship
 RUN mkdir -p .config && \
     mkdir -p StarshipPrompt
