@@ -102,7 +102,7 @@ RUN chown -R developer:developer /home/developer
 USER developer
 
 # Install `uv`. Used for pre-commit
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN wget -qO- https://astral.sh/uv/install.sh | sh
 
 # Configure Starship
 RUN mkdir -p .config && \
